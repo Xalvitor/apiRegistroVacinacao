@@ -1,7 +1,7 @@
 # apiRegistroVacinacao
 Registro de Vacinação
 
-Ultilize JAVA 8
+Utilize JAVA 8
 
 A API 3 deve gerenciar Registro de vacinação, sendo que um Registro de vacinação deve ter:
 
