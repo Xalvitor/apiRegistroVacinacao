@@ -54,17 +54,13 @@ public class VacinaService {
         return dosesInfo;
     }
 
-    public ResponseEntity<?> listarTotalVacinasAplicadas(String estado, Map<String, String> parametrosRequisicao) {
-        if (parametrosRequisicao.size() > 1 || (parametrosRequisicao.size() == 1 && !parametrosRequisicao.containsKey("estado"))) {
-            return ResponseEntity.badRequest().body("Erro: Parâmetros não permitidos na solicitação.");
-        }
-
+    public Map<String, Object> listarTotalVacinasAplicadas(String estado) {
         try {
             JsonNode dadosPacientes = pacienteWBService.listaTodosPacientes();
             List<RegistroVacinacao> todosOsRegistros = registroVacinacaoService.listarRegistroVacinacao();
 
             if (dadosPacientes == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao obter dados da API externa.");
+                throw new RuntimeException("Erro ao obter dados da API Paciente.");
             }
 
             int totalVacinasAplicadas = calcularTotalVacinasAplicadas(dadosPacientes, todosOsRegistros, estado);
@@ -72,9 +68,9 @@ public class VacinaService {
             Map<String, Object> resposta = new HashMap<>();
             resposta.put("totalVacinasAplicadas", totalVacinasAplicadas);
 
-            return ResponseEntity.ok(resposta);
+            return resposta;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao listar o total de vacinas aplicadas: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar o total de vacinas aplicadas: " + e.getMessage());
         }
     }
 

@@ -113,8 +113,9 @@ public class RegistroVacinacaoController {
             }
             return ResponseEntity.ok(dosesInfo);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao listar as doses do paciente: " + e.getMessage());
+            Map<String, String> resposta = new HashMap<>();
+            resposta.put("mensagem", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resposta);
         }
     }
 
@@ -122,7 +123,17 @@ public class RegistroVacinacaoController {
     public ResponseEntity<?> listarTotalVacinasAplicadas(
             @RequestParam(name = "estado", required = false) String estado,
             @RequestParam Map<String, String> requestParams) {
-        return vacinaService.listarTotalVacinasAplicadas(estado, requestParams);
+
+        try {
+            if (requestParams.size() > 1 || (requestParams.size() == 1 && !requestParams.containsKey("estado"))) {
+                return ResponseEntity.badRequest().body("Erro: Parâmetros não permitidos na solicitação.");
+            }
+            List<Map<String, Object>> resposta = Collections.singletonList(vacinaService.listarTotalVacinasAplicadas(estado));
+
+            return ResponseEntity.ok(resposta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao listar o total de vacinas aplicadas: " + e.getMessage());
+        }
     }
 
     @GetMapping("/pacientes/atrasadas")
