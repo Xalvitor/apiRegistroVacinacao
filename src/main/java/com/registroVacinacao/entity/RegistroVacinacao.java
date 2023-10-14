@@ -26,6 +26,6 @@ public class RegistroVacinacao {
     private String identificacaoPaciente;
     @NotBlank(message = "Vacina não pode estar em branco.")
     private String identificacaoVacina;
-    @NotBlank(message = "Doce não pode estar em branco.")
+    @NotBlank(message = "Dose não pode estar em branco.")
     private String identificacaoDose;
 }

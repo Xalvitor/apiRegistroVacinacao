@@ -2,22 +2,20 @@ package com.registroVacinacao.controller;
 
 import com.registroVacinacao.entity.RegistroVacinacao;
 import com.registroVacinacao.service.RegistroVacinacaoService;
+import com.registroVacinacao.service.VacinaService;
+import com.registroVacinacao.wbservice.PacienteWBService;
+import com.registroVacinacao.wbservice.VacinaWBService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-
-import java.util.stream.Collectors;
-import java.util.*;
-
-import lombok.Data;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 
@@ -27,6 +25,12 @@ public class RegistroVacinacaoController {
 
     @Autowired
     RegistroVacinacaoService registroVacinacaoService;
+    @Autowired
+    private PacienteWBService pacienteWBService;
+    @Autowired
+    private VacinaWBService vacinaWBService;
+    @Autowired
+    private VacinaService vacinaService;
 
     @GetMapping
     public ResponseEntity<List<RegistroVacinacao>> listarRegistroVacinacao() {
@@ -100,4 +104,31 @@ public class RegistroVacinacaoController {
         }
     }
 
+    @GetMapping("/pacientes/{pacienteId}/doses")
+    public ResponseEntity<?> listarDosesPaciente(@PathVariable String pacienteId) {
+        try {
+            List<Map<String, Object>> dosesInfo = vacinaService.listarDosesDoPaciente(pacienteId);
+            if (dosesInfo.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(dosesInfo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao listar as doses do paciente: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/pacientes/vacinas")
+    public ResponseEntity<?> listarTotalVacinasAplicadas(
+            @RequestParam(name = "estado", required = false) String estado,
+            @RequestParam Map<String, String> requestParams) {
+        return vacinaService.listarTotalVacinasAplicadas(estado, requestParams);
+    }
+
+    @GetMapping("/pacientes/atrasadas")
+    public ResponseEntity<?> listarPacientesComDosesAtrasadas(
+            @RequestParam(name = "estado", required = false) String estado,
+            @RequestParam Map<String, String> requestParams) {
+        return vacinaService.listarPacientesComDosesAtrasadas(estado, requestParams);
+    }
 }
