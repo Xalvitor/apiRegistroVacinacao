@@ -61,7 +61,7 @@ public class VacinaService {
         return dosesInfo;
     }
 
-    public Map<String, Object>  to(String estado) {
+    public Map<String, Object>  listarTotalVacinasAplicadas(String estado) {
         try {
             JsonNode dadosPacientes = pacienteWBService.listaTodosPacientes();
             List<RegistroVacinacao> todosOsRegistros = registroVacinacaoService.listarRegistroVacinacao();
