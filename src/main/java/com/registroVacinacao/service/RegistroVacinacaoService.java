@@ -33,16 +33,6 @@ public class RegistroVacinacaoService {
     @Cacheable("registroVacinacaoCache")
     public RegistroVacinacao buscarRegistroVacinacao(String id) throws Exception {
 
-        Cache cache = cacheManager.getCache("registroVacinacaoCache");
-
-        if (cache != null){
-            Cache.ValueWrapper valorBuscaId = cache.get(id);
-            if (valorBuscaId != null) {
-                RegistroVacinacao registroVacinacao = (RegistroVacinacao) valorBuscaId.get();
-                return registroVacinacao;
-            }
-        }
-
         Optional<RegistroVacinacao> registroVacinacaoOptional = registroVacinacaoRepository.findById(id);
 
         if (!registroVacinacaoOptional.isPresent()) {
